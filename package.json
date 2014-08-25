@@ -1,0 +1,42 @@
+{
+  "name": "grunt-prebuilder",
+  "description": "Grunt plugin that performs as a C precompiler does.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/Nytramr/grunt-prebuilder",
+  "author": {
+    "name": "Martin Rubinsztein",
+    "email": "martin.rubinsztein@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Nytramr/grunt-prebuilder"
+  },
+  "bugs": {
+    "url": "https://github.com/Nytramr/grunt-prebuilder/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/Nytramr/grunt-prebuilder/blob/master/LICENSE-MIT"
+    }
+  ],
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "grunt-contrib-jshint": "^0.9.2",
+    "grunt-contrib-clean": "^0.5.0",
+    "grunt-contrib-nodeunit": "^0.3.3",
+    "grunt": "~0.4.5",
+    "grunt-node-inspector": "^0.1.5"
+  },
+  "peerDependencies": {
+    "grunt": "~0.4.5"
+  },
+  "keywords": [
+    "gruntplugin"
+  ]
+}
