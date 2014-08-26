@@ -1,6 +1,9 @@
 /* include_test.js */
 
 //@define debug
+//@define zero 0
+//@define emptyString ''
+//@define foo smart
 
 var foo = function(){
 

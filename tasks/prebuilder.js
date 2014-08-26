@@ -23,13 +23,12 @@ module.exports = function(grunt) {
             separator: ', '
         });
 
-        var skipCode = 0;
-
         var definitions = {};
 
         //Funtion to process the file content
         var processFile = function(filepath){
-
+            var codeLevel = []; //Code level is managed by each file
+            var skipCode = false;
             // Read file source.
             var fileContent = grunt.file.read(filepath);
 
@@ -40,18 +39,20 @@ module.exports = function(grunt) {
                 //Lets see which directives are
                 for(var i=1;i<fileParts.length;i++){
                     // var splitedPart = fileParts[i].match(/(\w+)\s+(.*?)[\r\n]((?:.|\n|\r)*)/);
-                    var splitedParts = fileParts[i].match(/([\w \.\/\-]+)[\n\r]*((?:.|\n|\r)*)/);
+                    var splitedParts = fileParts[i].match(/([\w \.\/\-'"]+)[\n\r]?((?:.|\n|\r)*)/);
+                    debugger;
                     if (splitedParts) {
                         var directive = splitedParts[1].match(/(\w+)\s+(.*)/);
                         
                         if (directive[1].toLowerCase() === 'endif') {
-                            if(skipCode){
-                                skipCode--;
+                            if(codeLevel.level){
+                                skipCode = codeLevel.pop();
                             }else{
                                 //Error
                             }
                             
                         }else if (directive[1].toLowerCase() === 'include') {
+                            if(skipCode){continue;}
                             var includePath = path.join(path.dirname(filepath), directive[2].replace(/['"]/g, '').trim());
                             // importpath = path.resolve(path.dirname(filepath)+'/'+importpath);
                             if(grunt.file.exists(includePath))
@@ -63,22 +64,32 @@ module.exports = function(grunt) {
                                 grunt.log.warn('File "' + includePath + '" not found. Directive omitted');
                             }
                         }else if (directive[1].toLowerCase() === 'define') {
+                            if(skipCode){continue;}
                             //Not the rest of the line is needed, just the first word
-                            var def = directive[2].match(/\w+/);
-
-                            if(def && def[0]){
-                                definitions[def[0]] = definitions[def[0]] || 1;
+                            var def = directive[2].match(/(\w+) *(.*)/);
+                            debugger;
+                            if(def && definitions[def[1]] === undefined){
+                                definitions[def[1]] = def[2] || true;
                             }
 
                         }else if (directive[1].toLowerCase() === 'ifdef') {
-
+                            //if the second part of the directive is present in the definitions dictionary
+                            codeLevel.push(skipCode);
+                            skipCode = definitions[directive[2]] !== undefined;
+                            if(skipCode){continue;}
                         }else if (directive[1].toLowerCase() === 'ifndef') {
+                            //if the second part of the directive isn't present in the definitions dictionary
+                            codeLevel.push(skipCode);
+                            skipCode = definitions[directive[2]] === undefined;
+                            if(skipCode){continue;}
                         }
-
-                        processParts.push(splitedParts[2]);
+                        if(splitedParts[2]){
+                            //if somethins remains
+                            processParts.push(splitedParts[2]);
+                        }
                     }else{
                         //We can't loose the code, lets add it to the parts
-                        //TODO: Throw a comment to warn the user
+                        //TODO: Throw a comment in order to warn the user
 
                         processParts.push('//@' + fileParts[i]);
 
