@@ -33,64 +33,73 @@ module.exports = function(grunt) {
             var fileContent = grunt.file.read(filepath);
 
             var fileParts = fileContent.split('//@'); //Lets find all prebuild directives, if any.
-
+            //debugger;
             if (fileParts.length > 1) {
                 var processParts = [fileParts[0]];
                 //Lets see which directives are
                 for(var i=1;i<fileParts.length;i++){
                     // var splitedPart = fileParts[i].match(/(\w+)\s+(.*?)[\r\n]((?:.|\n|\r)*)/);
                     var splitedParts = fileParts[i].match(/([\w \.\/\-'"]+)[\n\r]?((?:.|\n|\r)*)/);
-                    debugger;
+                    //debugger;
                     if (splitedParts) {
-                        var directive = splitedParts[1].match(/(\w+)\s+(.*)/);
+                        var directive = splitedParts[1].match(/(\w+)[\n\r\s]*(.*)/);
+                        if(directive){
                         
-                        if (directive[1].toLowerCase() === 'endif') {
-                            if(codeLevel.level){
-                                skipCode = codeLevel.pop();
-                            }else{
-                                //Error
-                            }
-                            
-                        }else if (directive[1].toLowerCase() === 'include') {
-                            if(skipCode){continue;}
-                            var includePath = path.join(path.dirname(filepath), directive[2].replace(/['"]/g, '').trim());
-                            // importpath = path.resolve(path.dirname(filepath)+'/'+importpath);
-                            if(grunt.file.exists(includePath))
-                            {
-                                processParts.push(processFile(includePath));
-                            }
-                            else
-                            {
-                                grunt.log.warn('File "' + includePath + '" not found. Directive omitted');
-                            }
-                        }else if (directive[1].toLowerCase() === 'define') {
-                            if(skipCode){continue;}
-                            //Not the rest of the line is needed, just the first word
-                            var def = directive[2].match(/(\w+) *(.*)/);
-                            debugger;
-                            if(def && definitions[def[1]] === undefined){
-                                definitions[def[1]] = def[2] || true;
-                            }
+                            if (directive[1].toLowerCase() === 'endif') {
+                                if(codeLevel.level){
+                                    skipCode = codeLevel.pop();
+                                }else{
+                                    //Error
+                                }
+                                
+                            }else if (directive[1].toLowerCase() === 'include') {
+                                if(skipCode){continue;}
+                                var includePath = path.join(path.dirname(filepath), directive[2].replace(/['"]/g, '').trim());
+                                // importpath = path.resolve(path.dirname(filepath)+'/'+importpath);
+                                if(grunt.file.exists(includePath))
+                                {
+                                    processParts.push(processFile(includePath));
+                                }
+                                else
+                                {
+                                    grunt.log.warn('File "' + includePath + '" not found. Directive omitted');
+                                }
+                            }else if (directive[1].toLowerCase() === 'define') {
+                                debugger;
+                                if(skipCode){continue;}
+                                //Not the rest of the line is needed, just the first word
+                                var def = directive[2].match(/(\w+) *(.*)/);
+                                //debugger;
+                                if(def && definitions[def[1]] === undefined){
+                                    definitions[def[1]] = def[2] || true;
+                                }
 
-                        }else if (directive[1].toLowerCase() === 'ifdef') {
-                            //if the second part of the directive is present in the definitions dictionary
-                            codeLevel.push(skipCode);
-                            skipCode = definitions[directive[2]] !== undefined;
-                            if(skipCode){continue;}
-                        }else if (directive[1].toLowerCase() === 'ifndef') {
-                            //if the second part of the directive isn't present in the definitions dictionary
-                            codeLevel.push(skipCode);
-                            skipCode = definitions[directive[2]] === undefined;
-                            if(skipCode){continue;}
-                        }
-                        if(splitedParts[2]){
-                            //if somethins remains
-                            processParts.push(splitedParts[2]);
+                            }else if (directive[1].toLowerCase() === 'ifdef') {
+                                //if the second part of the directive is present in the definitions dictionary
+                                debugger;
+                                codeLevel.push(skipCode);
+                                skipCode = definitions[directive[2]] === undefined;
+                                if(skipCode){continue;}
+                            }else if (directive[1].toLowerCase() === 'ifndef') {
+                                //if the second part of the directive isn't present in the definitions dictionary
+                                debugger;
+                                codeLevel.push(skipCode);
+                                skipCode = definitions[directive[2]] !== undefined;
+                                if(skipCode){continue;}
+                            }
+                            if(splitedParts[2]){
+                                //if somethins remains
+                                processParts.push(splitedParts[2]);
+                            }
+                        }else{
+                            //We can't loose the code, lets add it to the parts
+                            //TODO: Throw a comment in order to warn the user
+                            grunt.log.warn('Directive "//@' + splitedParts[1] + '" is not supported.');
+                            processParts.push('//@' + fileParts[i]);
                         }
                     }else{
                         //We can't loose the code, lets add it to the parts
-                        //TODO: Throw a comment in order to warn the user
-
+                        grunt.log.warn('Directive "//@' + fileParts[i] + '" is not supported.');
                         processParts.push('//@' + fileParts[i]);
 
                     }
@@ -117,7 +126,7 @@ module.exports = function(grunt) {
                     return true;
                 }
             }).forEach(function processEachFile(filepath, index){
-
+                debugger;
                 var src = processFile(filepath);
 
                 var destFilePath = path.join(f.dest,path.basename(filepath));
