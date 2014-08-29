@@ -39,11 +39,11 @@ module.exports = function(grunt) {
             },
             custom_options: {
                 options: {
-                    punctuation: ' !!!',
-                    separator: ': '
+                    definitions: {skip9and10:true},
+                    separator: ''
                 },
                 files: {
-                    'tmp/custom_options': ['test/fixtures/testing', 'test/fixtures/123']
+                    'tmp/custom_options': ['test/fixtures/include_test.js', 'test/fixtures/testing.js']
                 }
             }
         },

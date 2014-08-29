@@ -19,8 +19,8 @@ module.exports = function(grunt) {
 
         // Merge task-specific and/or target-specific options with these defaults.
         var options = this.options({
-            punctuation: '.',
-            separator: ', '
+            definitions: {},
+            separator: '\n'
         });
 
         var definitions = {};
@@ -78,18 +78,24 @@ module.exports = function(grunt) {
                                 //if the second part of the directive is present in the definitions dictionary
                                 debugger;
                                 codeLevel.push(skipCode);
-                                skipCode = definitions[directive[2]] === undefined;
+                                skipCode = skipCode || definitions[directive[2]] === undefined;
                                 if(skipCode){continue;}
                             }else if (directive[1].toLowerCase() === 'ifndef') {
                                 //if the second part of the directive isn't present in the definitions dictionary
                                 debugger;
                                 codeLevel.push(skipCode);
-                                skipCode = definitions[directive[2]] !== undefined;
+                                skipCode = skipCode || definitions[directive[2]] !== undefined;
+                                if(skipCode){continue;}
+                            }else if (directive[1].toLowerCase() === 'else') {
+                                //if the second part of the directive isn't present in the definitions dictionary
+                                debugger;
+                                skipCode = skipCode === false;
                                 if(skipCode){continue;}
                             }
-                            if(splitedParts[2]){
-                                //if somethins remains
-                                processParts.push(splitedParts[2]);
+                            var remainingCode = splitedParts[2].trimRight();
+                            if(remainingCode){
+                                //if something remains
+                                processParts.push(remainingCode);
                             }
                         }else{
                             //We can't loose the code, lets add it to the parts
@@ -106,7 +112,7 @@ module.exports = function(grunt) {
 
                 }
 
-                return processParts.join('\n');
+                return processParts.join(options.separator);
                 
             }
 
@@ -127,6 +133,8 @@ module.exports = function(grunt) {
                 }
             }).forEach(function processEachFile(filepath, index){
                 debugger;
+                definitions = JSON.parse(JSON.stringify(options.definitions));
+
                 var src = processFile(filepath);
 
                 var destFilePath = path.join(f.dest,path.basename(filepath));
