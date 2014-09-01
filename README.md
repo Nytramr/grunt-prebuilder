@@ -27,9 +27,12 @@ grunt.initConfig({
   prebuilder: {
     options: {
       // Task-specific options go here.
+      separator: '',
+      definitions: {}
     },
-    your_target: {
+    files: {
       // Target-specific file lists and/or options go here.
+      dest_folder:[src_file1, src_file2]
     },
   },
 });
@@ -39,44 +42,78 @@ grunt.initConfig({
 
 #### options.separator
 Type: `String`
-Default value: `',  '`
+Default value: `'\n'`
 
-A string value that is used to do something with whatever.
+A string to add after each directive.
 
-#### options.punctuation
-Type: `String`
-Default value: `'.'`
+#### options.definitions
+Type: `Object`
+Default value: `{}`
 
-A string value that is used to do something else with whatever else.
+An Object as a dictionary with all the definition you want to take in account. Any other @define directive will be added to this dictionary.
+
+### Prebuilder directives
+
+#### @define
+The `@define` directive is used to defining identifiers that can be used with `@ifdef` and `@ifndef` directives.
+```js
+//@define identifier [token]
+```
+Where the *identifier* is mandatory and will be associated with the *token* in a key/value dictionary.
+
+#### @ifdef @ifndef @else @endif
+The `@ifdef` and `@ifndef` directives are used to include or exclude a certain part of the code regarding to the existence of a defined identifier.
+
+```js
+//@ifndef identifier
+    Some code
+//@endif
+
+//@ifdef identifier
+    More Code
+//@else
+    Another Code
+//@endif
+```
+If the *identifier* of the `@ifdef` was defined (or if it wasn't in the `@ifndef`case) earlier the followed code would be added, otherwise if a `@else` directive exists, that code will be added. Both directives can include an `@else` directive and they can be "nested" one inside another.
+
+#### @include
+The `@include` directive is used to add the content of a external file.
+```js
+//@include path_to_the_file
+```
+Where the *path_to_the_file* is the path to the file to be included inside the resulting processed file (I stronggly recommend to use relative paths).
 
 ### Usage Examples
 
 #### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
+In this example, the `app/js/src/testing.js` file will be processed and its result will be placed in the `dist/script` folder.
 
 ```js
 grunt.initConfig({
   prebuilder: {
     options: {},
     files: {
-      'dest/default_options': ['src/testing', 'src/123'],
+      'dist/scrips': ['app/js/src/testing.js'],
     },
   },
 });
 ```
 
 #### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
+In this example, the `app/js/src/testing.js` file will be processed, using a predefined `debug` directive and using a space separator instead the default carrige return character between each directive. The resulting file will be placed in the `dist/script` folder.
 
 ```js
 grunt.initConfig({
   prebuilder: {
     options: {
-      separator: ': ',
-      punctuation: ' !!!',
+      separator: ' ',
+      definitions: {
+        debug: true
+      },
     },
     files: {
-      'dest/default_options': ['src/testing', 'src/123'],
+      'dist/scrips': ['app/js/src/testing.js'],
     },
   },
 });
@@ -86,4 +123,4 @@ grunt.initConfig({
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
-_(Nothing yet)_
+* 2014-09-01    0.1.0    Initial Release
