@@ -30,10 +30,10 @@ grunt.initConfig({
       separator: '',
       definitions: {}
     },
-    files: {
+    files: [
       // Target-specific file lists and/or options go here.
-      dest_folder:[src_file1, src_file2]
-    },
+      {dest:'dist/scrips' src:['app/js/src/testing.js']}
+    ]
   },
 });
 ```
@@ -93,9 +93,9 @@ In this example, the `app/js/src/testing.js` file will be processed and its resu
 grunt.initConfig({
   prebuilder: {
     options: {},
-    files: {
-      'dist/scrips': ['app/js/src/testing.js'],
-    },
+    files: [
+      {dest:'dist/scrips' src:['app/js/src/testing.js']}
+    ]
   },
 });
 ```
@@ -112,9 +112,9 @@ grunt.initConfig({
         debug: true
       },
     },
-    files: {
-      'dist/scrips': ['app/js/src/testing.js'],
-    },
+    files: [
+      {dest:'dist/scrips' src:['app/js/src/testing.js']}
+    ]
   },
 });
 ```
@@ -123,4 +123,5 @@ grunt.initConfig({
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
+* 2014-09-17    0.2.0    Changing the configuration object in order to stop using a deprecated files format
 * 2014-09-01    0.1.0    Initial Release

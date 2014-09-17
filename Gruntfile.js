@@ -33,18 +33,18 @@ module.exports = function(grunt) {
             default_options: {
                 options: {
                 },
-                files: {
-                    'tmp/default_options': ['test/fixtures/include_test.js', 'test/fixtures/testing.js']
-                }
+                files: [
+                    {dest:'tmp/default_options', src:['test/fixtures/include_test.js', 'test/fixtures/testing.js']}
+                ]
             },
             custom_options: {
                 options: {
                     definitions: {skip9and10:true},
                     separator: ''
                 },
-                files: {
-                    'tmp/custom_options': ['test/fixtures/include_test.js', 'test/fixtures/testing.js']
-                }
+                files: [
+                    {dest:'tmp/custom_options', src:['test/fixtures/include_test.js', 'test/fixtures/testing.js']}
+                ]
             }
         },
 
